@@ -19,8 +19,8 @@ RUN apk add --no-cache bind-tools imagemagick php8 php8-bcmath php8-bz2 php8-cty
   sed -i "s#^;opcache.save_comments=1#opcache.save_comments=1#g" /etc/php8/php.ini &&\
   sed -i "s#^;opcache.revalidate_freq=2#opcache.revalidate_freq=1#g" /etc/php8/php.ini &&\
   echo 'apc.enable_cli=1' >> /etc/php8/conf.d/apcu.ini &&\
-  deluser $(grep ':33:' /etc/passwd | awk -F ':' '{print $1}') || true &&\
-  delgroup $(grep '^www-data:' /etc/group | awk -F ':' '{print $1}') || true &&\
+  deluser "$(grep ':33:' /etc/passwd | awk -F ':' '{print $1}')" || true &&\
+  delgroup "$(grep '^www-data:' /etc/group | awk -F ':' '{print $1}')" || true &&\
   mkdir /var/www &&\
   addgroup -g 33 www-data &&\
   adduser -D -u 33 -G www-data -s /sbin/nologin -H -h /var/www www-data &&\
