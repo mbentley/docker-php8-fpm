@@ -1,13 +1,18 @@
 # mbentley/php8-fpm
 
 docker image for php8-fpm
-based off of alpine:latest
+based off of alpine:latest or alpine:3.16
 
 To pull this image:
 `docker pull mbentley/php8-fpm`
 
 Example usage:
 `docker run -i -t mbentley/php8-fpm`
+
+## Tags
+
+* `latest`, `8.1` - php8.1
+* `8.0` - php8
 
 ## Environment Variables
 
