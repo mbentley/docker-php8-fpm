@@ -17,10 +17,12 @@ if [ -d /etc/php8 ]
 then
   # php8
   PHP_VER="php8"
+  SOCKFILE="php-fpm8.sock"
 elif [ -d /etc/php81 ]
 then
   # php81
   PHP_VER="php81"
+  SOCKFILE="php-fpm81.sock"
 else
   echo "ERROR: unknown php version!"
   exit 1
@@ -49,9 +51,9 @@ then
   if [ "${LISTEN}" = "port" ]
   then
     echo "Disabling UNIX socket; enabling listening on TCP port 9000"
-    sed -i "s#listen = /var/run/php/php-fpm8.sock#listen = 9000#g" "/etc/${PHP_VER}/php-fpm.d/www.conf"
+    sed -i "s#listen = /var/run/php/${SOCKFILE}#listen = 9000#g" "/etc/${PHP_VER}/php-fpm.d/www.conf"
   else
-    echo "Using default value 'listen = /var/run/php/php-fpm8.sock' for 'listen'"
+    echo "Using default value 'listen = /var/run/php/${SOCKFILE}' for 'listen'"
   fi
 
   if [ ! "${MEMORY_LIMIT}" = "128" ]
