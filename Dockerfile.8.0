@@ -24,7 +24,8 @@ RUN apk add --no-cache bind-tools imagemagick openssl php8 php8-bcmath php8-bz2 
   mkdir /var/www &&\
   addgroup -g 33 www-data &&\
   adduser -D -u 33 -G www-data -s /sbin/nologin -H -h /var/www www-data &&\
-  chown -R www-data:www-data /var/www
+  chown -R www-data:www-data /var/www &&\
+  ln -sf /usr/bin/php8 /usr/bin/php
 
 # add entrypoint script
 COPY entrypoint.sh /entrypoint.sh

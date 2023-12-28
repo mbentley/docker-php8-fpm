@@ -12,21 +12,11 @@ then
   mkdir /run/php
 fi
 
-# check to see which version of php8.x we have
-if [ -d /etc/php8 ]
-then
-  # php8
-  PHP_VER="php8"
-  SOCKFILE="php-fpm8.sock"
-elif [ -d /etc/php81 ]
-then
-  # php81
-  PHP_VER="php81"
-  SOCKFILE="php-fpm81.sock"
-else
-  echo "ERROR: unknown php version!"
-  exit 1
-fi
+# figure out version from the symlink
+#   version should be something like "php81"
+#   the socket should be something like "php-fpm81.sock"
+PHP_VER="$(readlink -f /usr/bin/php | awk -F '/' '{print $NF}')"
+SOCKFILE="php-fpm$(echo "${PHP_VER}"| awk -F 'php' '{print $NF}').sock"
 
 # only configure once
 if [ ! -f /tmp/configured ]

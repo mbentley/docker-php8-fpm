@@ -11,8 +11,10 @@ Example usage:
 
 ## Tags
 
-* `latest`, `8.1` - php8.1
-* `8.0` - php8
+* `latest`, `8.3` - php8.3
+* `8.2` - php8.2
+* `8.1` - php8.1
+* `8.0` - php8.0
 
 ## Environment Variables
 

@@ -26,7 +26,7 @@ RUN apk add --no-cache bind-tools imagemagick imagemagick-svg openssl php81 php8
   addgroup -g 33 www-data &&\
   adduser -D -u 33 -G www-data -s /sbin/nologin -H -h /var/www www-data &&\
   chown -R www-data:www-data /var/www &&\
-  ln -s /usr/bin/php81 /usr/bin/php
+  ln -sf /usr/bin/php81 /usr/bin/php
 
 # add entrypoint script
 COPY entrypoint.sh /entrypoint.sh
