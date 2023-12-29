@@ -14,6 +14,11 @@ Example usage:
 * `latest`, `8.3` - php8.3
 * `8.2` - php8.2
 * `8.1` - php8.1
+
+### Archived Tags
+
+These no longer receive updates or regular rebuilds but the tag(s) may still be available on Docker Hub:
+
 * `8.0` - php8.0
 
 ## Environment Variables
