@@ -1,7 +1,7 @@
 # mbentley/php8-fpm
 
 docker image for php8-fpm
-based off of alpine:latest or alpine:3.16
+based off of alpine:latest, alpine:3.16 (8.0), alpine 3.19 (8.1)
 
 To pull this image:
 `docker pull mbentley/php8-fpm`
