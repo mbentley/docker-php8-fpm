@@ -18,7 +18,7 @@ RUN apk add --no-cache bind-tools imagemagick imagemagick-svg openssl php81 php8
   sed -i "s#^;opcache.memory_consumption=128#opcache.memory_consumption=256#g" /etc/php81/php.ini &&\
   sed -i "s#^;opcache.save_comments=1#opcache.save_comments=1#g" /etc/php81/php.ini &&\
   sed -i "s#^;opcache.revalidate_freq=2#opcache.revalidate_freq=30#g" /etc/php81/php.ini &&\
-  sed -i "s#^output_buffering = 4096#output_buffering = Off#g" /etc/php83/php.ini &&\
+  sed -i "s#^output_buffering = 4096#output_buffering = Off#g" /etc/php81/php.ini &&\
   echo 'apc.enable_cli=1' >> /etc/php81/conf.d/apcu.ini &&\
   (deluser "$(grep ':33:' /etc/passwd | awk -F ':' '{print $1}')" || true) &&\
   (delgroup "$(grep '^www-data:' /etc/group | awk -F ':' '{print $1}')" || true) &&\
