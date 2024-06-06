@@ -5,6 +5,7 @@ MAX_SIZE=${MAX_SIZE:-8}
 MAX_CHILDREN=${MAX_CHILDREN:-5}
 MEMORY_LIMIT=${MEMORY_LIMIT:-128}
 LISTEN=${LISTEN:-socket}
+UPLOAD_TMP_DIR=${UPLOAD_TMP_DIR:-}
 
 # make sure /run/php exists
 if [ ! -d /run/php ]
@@ -30,6 +31,22 @@ then
     echo "Using default value '${MAX_SIZE}' for 'post_max_size' and 'upload_max_filesize'"
   fi
 
+  if [ ! "${MEMORY_LIMIT}" = "128" ]
+  then
+    echo "Setting 'memory_limit' to '${MEMORY_LIMIT}'"
+    sed -i "s/memory_limit = 128M/memory_limit = ${MEMORY_LIMIT}M/g" "/etc/${PHP_VER}/php.ini"
+  else
+    echo "Using default value '${MEMORY_LIMIT}' for 'memory_limit'"
+  fi
+
+  if [ -n "${UPLOAD_TMP_DIR}" ]
+  then
+    echo "Setting 'upload_tmp_dir' to '${UPLOAD_TMP_DIR}'"
+    sed -i "s/;upload_tmp_dir =/upload_tmp_dir = ${UPLOAD_TMP_DIR}/g" "/etc/${PHP_VER}/php.ini"
+  else
+    echo "Using default value '<null>' for 'upload_tmp_dir'"
+  fi
+
   if [ ! "${MAX_CHILDREN}" = "5" ]
   then
     echo "Setting 'max_children' to '${MAX_CHILDREN}'"
@@ -44,14 +61,6 @@ then
     sed -i "s#listen = /var/run/php/${SOCKFILE}#listen = 9000#g" "/etc/${PHP_VER}/php-fpm.d/www.conf"
   else
     echo "Using default value 'listen = /var/run/php/${SOCKFILE}' for 'listen'"
-  fi
-
-  if [ ! "${MEMORY_LIMIT}" = "128" ]
-  then
-    echo "Setting 'memory_limit' to '${MEMORY_LIMIT}'"
-    sed -i "s/memory_limit = 128M/memory_limit = ${MEMORY_LIMIT}M/g" "/etc/${PHP_VER}/php.ini"
-  else
-    echo "Using default value '${MEMORY_LIMIT}' for 'memory_limit'"
   fi
 
   touch /tmp/configured

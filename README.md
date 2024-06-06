@@ -33,6 +33,8 @@ The following environment variables can be passed to the docker image:
 
 `LISTEN` (default: socket; options: socket or port) - Changes php8-fpm listen behavior
 
+`UPLOAD_TMP_DIR` (default: `<empty>`) - Sets to tmp directory for uploads
+
 ## Working with nginx + php8-fpm
 
 First start a PHP container:
