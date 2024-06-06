@@ -12,14 +12,6 @@ RUN apk add --no-cache bind-tools imagemagick imagemagick-svg openssl php83 php8
   sed -i "s#^;listen.group = nobody#listen.group = www-data#g" /etc/php83/php-fpm.d/www.conf &&\
   sed -i "s#^;listen.mode = 0660#listen.mode = 0660#g" /etc/php83/php-fpm.d/www.conf &&\
   sed -i "s#^;env#env#g" /etc/php83/php-fpm.d/www.conf &&\
-  sed -i "s#upload_max_filesize = 2M#upload_max_filesize = 8M#g" /etc/php83/php.ini &&\
-  sed -i "s#^;opcache.enable=1#opcache.enable=1#g" /etc/php83/php.ini &&\
-  sed -i "s#^;opcache.interned_strings_buffer=8#opcache.interned_strings_buffer=32#g" /etc/php83/php.ini &&\
-  sed -i "s#^;opcache.max_accelerated_files=10000#opcache.max_accelerated_files=25000#g" /etc/php83/php.ini &&\
-  sed -i "s#^;opcache.memory_consumption=128#opcache.memory_consumption=256#g" /etc/php83/php.ini &&\
-  sed -i "s#^;opcache.save_comments=1#opcache.save_comments=1#g" /etc/php83/php.ini &&\
-  sed -i "s#^;opcache.revalidate_freq=2#opcache.revalidate_freq=30#g" /etc/php83/php.ini &&\
-  sed -i "s#^output_buffering = 4096#output_buffering = Off#g" /etc/php83/php.ini &&\
   echo 'apc.enable_cli=1' >> /etc/php83/conf.d/apcu.ini &&\
   (deluser "$(grep ':33:' /etc/passwd | awk -F ':' '{print $1}')" || true) &&\
   (delgroup "$(grep '^www-data:' /etc/group | awk -F ':' '{print $1}')" || true) &&\

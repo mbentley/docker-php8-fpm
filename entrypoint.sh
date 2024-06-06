@@ -25,7 +25,7 @@ then
   then
     echo "Setting 'post_max_size' and 'upload_max_filesize' to '${MAX_SIZE}'"
     sed -i "s/post_max_size = 8M/post_max_size = ${MAX_SIZE}M/g" "/etc/${PHP_VER}/php.ini"
-    sed -i "s/upload_max_filesize = 8M/upload_max_filesize = ${MAX_SIZE}M/g" "/etc/${PHP_VER}/php.ini"
+    sed -i "s/upload_max_filesize = 2M/upload_max_filesize = ${MAX_SIZE}M/g" "/etc/${PHP_VER}/php.ini"
   else
     echo "Using default value '${MAX_SIZE}' for 'post_max_size' and 'upload_max_filesize'"
   fi
