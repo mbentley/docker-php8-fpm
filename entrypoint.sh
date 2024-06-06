@@ -20,7 +20,7 @@ PHP_VER="$(readlink -f /usr/bin/php | awk -F '/' '{print $NF}')"
 SOCKFILE="php-fpm$(echo "${PHP_VER}"| awk -F 'php' '{print $NF}').sock"
 
 # only configure once
-if [ ! -f /tmp/configured ]
+if [ ! -f "/etc/${PHP_VER}/configured" ]
 then
   if [ ! "${MAX_SIZE}" = "8" ]
   then
@@ -63,7 +63,7 @@ then
     echo "Using default value 'listen = /var/run/php/${SOCKFILE}' for 'listen'"
   fi
 
-  touch /tmp/configured
+  touch "/etc/${PHP_VER}/configured"
   echo "Configuration complete."
 fi
 
