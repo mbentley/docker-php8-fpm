@@ -16,5 +16,8 @@ RUN apk add --no-cache bash bind-tools imagemagick imagemagick-svg openssl php82
 # add entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 
+# add logging config
+COPY logging.conf /etc/php83/php-fpm.d/logging.conf
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/sbin/php-fpm82","-F","--fpm-config","/etc/php82/php-fpm.conf"]

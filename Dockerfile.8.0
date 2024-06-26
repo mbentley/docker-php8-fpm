@@ -16,5 +16,8 @@ RUN apk add --no-cache bash bind-tools imagemagick openssl php8 php8-bcmath php8
 # add entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 
+# add logging config
+COPY logging.conf /etc/php83/php-fpm.d/logging.conf
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/sbin/php-fpm8","-F","--fpm-config","/etc/php8/php-fpm.conf"]

@@ -43,6 +43,9 @@ then
     # use substitution to output the contents of the variable
     echo "${!VARNAME}"
   done > "/etc/${PHP_VER}/php-fpm.d/www.inc"
+else
+  # touch to file to not have a warning
+  touch "/etc/${PHP_VER}/php-fpm.d/www.inc"
 fi
 
 # run the actual command
