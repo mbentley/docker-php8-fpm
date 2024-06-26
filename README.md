@@ -23,17 +23,28 @@ These no longer receive updates or regular rebuilds but the tag(s) may still be 
 
 ## Environment Variables
 
-The following environment variables can be passed to the docker image:
+As of 6/25/2024, the way environment variables work has changed.  There are two different prefixes that are used to override settings: `PHP_INI_` and `PHP_FPM_`.  For each, create multiple environment variables with different suffixes (i.e. - `PHP_INI_1`, `PHP_INI_2`, etc) with the value being the setting you wish to set.
 
-`MAX_SIZE` (default: 8) - Sets the 'post_max_size' and 'upload_max_filesize' options in php.ini; value is in MB
+* `PHP_INI_*` - written to `/etc/${PHP_VER}/conf.d/99_entrypoint_var_customizations.ini`
+* `PHP_FPM_*` - written to `/etc/${PHP_VER}/php-fpm.d/www.inc`
 
-`MAX_CHILDREN` (default: 5) - Sets the 'max_children' option in www.conf
+### Example
 
-`MEMORY_LIMIT` (default: 128) - Sets the 'memory_limit' option in php.ini; value is in MB
-
-`LISTEN` (default: socket; options: socket or port) - Changes php8-fpm listen behavior
-
-`UPLOAD_TMP_DIR` (default: `<empty>`) - Sets to tmp directory for uploads
+```ini
+...
+  -e PHP_INI_SETTING_01="memory_limit = 512M" \
+  -e PHP_INI_SETTING_02="post_max_size = 256M" \
+  -e PHP_INI_SETTING_03="upload_max_filesize = 256M" \
+...
+  -e PHP_FPM_SETTING_01="listen = /var/run/php/php-fpm83.sock" \
+  -e PHP_FPM_SETTING_02="user = www-data" \
+  -e PHP_FPM_SETTING_03="group = www-data" \
+  -e PHP_FPM_SETTING_04="listen.owner = www-data" \
+  -e PHP_FPM_SETTING_05="listen.group = www-data" \
+  -e PHP_FPM_SETTING_06="listen.mode = 0660" \
+  -e PHP_FPM_SETTING_07="pm.max_children = 10" \
+...
+```
 
 ## Working with nginx + php8-fpm
 

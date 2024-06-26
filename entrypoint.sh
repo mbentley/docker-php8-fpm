@@ -1,11 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-# set default env vars
-MAX_SIZE=${MAX_SIZE:-8}
-MAX_CHILDREN=${MAX_CHILDREN:-5}
-MEMORY_LIMIT=${MEMORY_LIMIT:-128}
-LISTEN=${LISTEN:-socket}
-UPLOAD_TMP_DIR=${UPLOAD_TMP_DIR:-}
+set -e
+
+# figure out the php version from the symlink
+PHP_VER="$(readlink -f /usr/bin/php | awk -F '/' '{print $NF}')"
 
 # make sure /run/php exists
 if [ ! -d /run/php ]
@@ -13,58 +11,39 @@ then
   mkdir /run/php
 fi
 
-# figure out version from the symlink
-#   version should be something like "php81"
-#   the socket should be something like "php-fpm81.sock"
-PHP_VER="$(readlink -f /usr/bin/php | awk -F '/' '{print $NF}')"
-SOCKFILE="php-fpm$(echo "${PHP_VER}"| awk -F 'php' '{print $NF}').sock"
+# get a list of variables that start with PHP_INI_
+ENV_VARS_PHP_INI="$(env | awk -F '=' '{print $1}' | grep ^PHP_INI_ | sort)"
 
-# only configure once
-if [ ! -f "/etc/${PHP_VER}/configured" ]
+# skip if empty
+if [ -n "${ENV_VARS_PHP_INI}" ]
 then
-  if [ ! "${MAX_SIZE}" = "8" ]
-  then
-    echo "Setting 'post_max_size' and 'upload_max_filesize' to '${MAX_SIZE}'"
-    sed -i "s/post_max_size = 8M/post_max_size = ${MAX_SIZE}M/g" "/etc/${PHP_VER}/php.ini"
-    sed -i "s/upload_max_filesize = 2M/upload_max_filesize = ${MAX_SIZE}M/g" "/etc/${PHP_VER}/php.ini"
-  else
-    echo "Using default value '${MAX_SIZE}' for 'post_max_size' and 'upload_max_filesize'"
-  fi
+  # loop through variables to output the contents
+  for VAR in ${ENV_VARS_PHP_INI}
+  do
+    # set VAR to varname
+    VARNAME="${VAR}"
 
-  if [ ! "${MEMORY_LIMIT}" = "128" ]
-  then
-    echo "Setting 'memory_limit' to '${MEMORY_LIMIT}'"
-    sed -i "s/memory_limit = 128M/memory_limit = ${MEMORY_LIMIT}M/g" "/etc/${PHP_VER}/php.ini"
-  else
-    echo "Using default value '${MEMORY_LIMIT}' for 'memory_limit'"
-  fi
-
-  if [ -n "${UPLOAD_TMP_DIR}" ]
-  then
-    echo "Setting 'upload_tmp_dir' to '${UPLOAD_TMP_DIR}'"
-    sed -i "s/;upload_tmp_dir =/upload_tmp_dir = ${UPLOAD_TMP_DIR}/g" "/etc/${PHP_VER}/php.ini"
-  else
-    echo "Using default value '<null>' for 'upload_tmp_dir'"
-  fi
-
-  if [ ! "${MAX_CHILDREN}" = "5" ]
-  then
-    echo "Setting 'max_children' to '${MAX_CHILDREN}'"
-    sed -i "s/pm.max_children = 5/pm.max_children = ${MAX_CHILDREN}/g" "/etc/${PHP_VER}/php-fpm.d/www.conf"
-  else
-    echo "Using default value '${MAX_CHILDREN}' for 'pm.max_children'"
-  fi
-
-  if [ "${LISTEN}" = "port" ]
-  then
-    echo "Disabling UNIX socket; enabling listening on TCP port 9000"
-    sed -i "s#listen = /var/run/php/${SOCKFILE}#listen = 9000#g" "/etc/${PHP_VER}/php-fpm.d/www.conf"
-  else
-    echo "Using default value 'listen = /var/run/php/${SOCKFILE}' for 'listen'"
-  fi
-
-  touch "/etc/${PHP_VER}/configured"
-  echo "Configuration complete."
+    # use substitution to output the contents of the variable
+    echo "${!VARNAME}"
+  done > "/etc/${PHP_VER}/conf.d/99_entrypoint_var_customizations.ini"
 fi
 
+# get a list of variables that start with PHP_FPM_
+ENV_VARS_PHP_FPM="$(env | awk -F '=' '{print $1}' | grep ^PHP_FPM_ | sort)"
+
+# skip if empty
+if [ -n "${ENV_VARS_PHP_FPM}" ]
+then
+  # loop through variables to output the contents
+  for VAR in ${ENV_VARS_PHP_FPM}
+  do
+    # set VAR to varname
+    VARNAME="${VAR}"
+
+    # use substitution to output the contents of the variable
+    echo "${!VARNAME}"
+  done > "/etc/${PHP_VER}/php-fpm.d/www.inc"
+fi
+
+# run the actual command
 exec "$@"
