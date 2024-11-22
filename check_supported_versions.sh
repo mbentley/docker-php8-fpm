@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # set expected supported versions
-EXPECTED_SUPPORTED_VERSIONS="8.1 8.2 8.3"
+EXPECTED_SUPPORTED_VERSIONS="8.1 8.2 8.3 8.4"
 
 # get supported versions
 SUPPORTED_VERSIONS="$(curl -s "https://www.php.net/releases/index.php?json" | jq -r .'["8"].supported_versions|.[]' | xargs)"
