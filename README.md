@@ -1,7 +1,7 @@
 # mbentley/php8-fpm
 
 docker image for php8-fpm
-based off of alpine:latest, alpine:3.16 (8.0), alpine 3.19 (8.1)
+based off of alpine:edge (8.5),  alpine:latest (8.2 - 8.4), alpine:3.16 (8.0), alpine 3.19 (8.1)
 
 To pull this image:
 `docker pull mbentley/php8-fpm`
@@ -11,7 +11,10 @@ Example usage:
 
 ## Tags
 
-* `latest`, `8.3` - php8.3
+* `8.5` - php8.5
+  * **Note**: php8.5 is currently missing `php85-opcache` and `php85-pecl-mcrypt` from the alpine repositories and is based on the `edge` release
+* `latest`, `8.4` - php8.4
+* `8.3` - php8.3
 * `8.2` - php8.2
 * `8.1` - php8.1
 

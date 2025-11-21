@@ -1,0 +1,25 @@
+# rebased/repackaged base image that only updates existing packages
+FROM mbentley/alpine:latest
+LABEL maintainer="Matt Bentley <mbentley@mbentley.net>"
+
+# install typical php packages and then additional packages
+#RUN apk add --no-cache bash bind-tools imagemagick imagemagick-svg openssl php84 php84-bcmath php84-bz2 php84-ctype php84-curl php84-exif php84-fileinfo php84-gd php84-fpm php84-gettext php84-gmp php84-iconv php84-intl php84-imap php84-json php84-ldap php84-mbstring php84-mysqli php84-opcache php84-pecl-apcu php84-pecl-igbinary php84-pecl-imagick php84-pecl-mcrypt php84-pecl-memcached php84-pecl-redis php84-pdo php84-pdo_mysql php84-pdo_pgsql php84-phar php84-pgsql php84-pcntl php84-posix php84-simplexml php84-sodium php84-sysvsem php84-xml php84-xmlreader php84-xmlwriter php84-zip ssmtp wget whois &&\
+RUN apk add --no-cache bash bind-tools imagemagick imagemagick-svg openssl php84 php84-bcmath php84-bz2 php84-ctype php84-curl php84-exif php84-fileinfo php84-gd php84-fpm php84-gettext php84-gmp php84-iconv php84-intl php84-imap php84-json php84-ldap php84-mbstring php84-mysqli php84-opcache php84-pecl-apcu php84-pecl-igbinary php84-pecl-imagick php84-pecl-memcached php84-pecl-redis php84-pdo php84-pdo_mysql php84-pdo_pgsql php84-phar php84-pgsql php84-pcntl php84-posix php84-simplexml php84-sodium php84-sysvsem php84-xml php84-xmlreader php84-xmlwriter php84-zip ssmtp wget whois &&\
+  apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing php84-pecl-mcrypt &&\
+  (deluser "$(grep ':33:' /etc/passwd | awk -F ':' '{print $1}')" || true) &&\
+  (delgroup "$(grep '^www-data:' /etc/group | awk -F ':' '{print $1}')" || true) &&\
+  mkdir /var/www &&\
+  addgroup -g 33 www-data &&\
+  adduser -D -u 33 -G www-data -s /sbin/nologin -H -h /var/www www-data &&\
+  chown -R www-data:www-data /var/www &&\
+  ln -sf /usr/bin/php84 /usr/bin/php &&\
+  echo 'include=/etc/php84/php-fpm.d/www.inc' >> /etc/php84/php-fpm.d/www.conf
+
+# add entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+
+# add logging config
+COPY logging.conf /etc/php84/php-fpm.d/logging.conf
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/sbin/php-fpm84","-F","--fpm-config","/etc/php84/php-fpm.conf"]

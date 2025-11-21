@@ -1,0 +1,29 @@
+# rebased/repackaged base image that only updates existing packages
+#FROM mbentley/alpine:latest
+FROM mbentley/alpine:edge
+LABEL maintainer="Matt Bentley <mbentley@mbentley.net>"
+
+# install typical php packages and then additional packages
+#RUN apk add --no-cache bash bind-tools imagemagick imagemagick-svg openssl php85 php85-bcmath php85-bz2 php85-ctype php85-curl php85-exif php85-fileinfo php85-gd php85-fpm php85-gettext php85-gmp php85-iconv php85-intl php85-imap php85-json php85-ldap php85-mbstring php85-mysqli php85-opcache php85-pecl-apcu php85-pecl-igbinary php85-pecl-imagick php85-pecl-mcrypt php85-pecl-memcached php85-pecl-redis php85-pdo php85-pdo_mysql php85-pdo_pgsql php85-phar php85-pgsql php85-pcntl php85-posix php85-simplexml php85-sodium php85-sysvsem php85-xml php85-xmlreader php85-xmlwriter php85-zip ssmtp wget whois &&\
+RUN apk add --no-cache bash bind-tools imagemagick imagemagick-svg openssl php85 php85-bcmath php85-bz2 php85-ctype php85-curl php85-exif php85-fileinfo php85-gd php85-fpm php85-gettext php85-gmp php85-iconv php85-intl php85-imap php85-json php85-ldap php85-mbstring php85-mysqli php85-pecl-apcu php85-pecl-igbinary php85-pecl-imagick php85-pecl-memcached php85-pecl-redis php85-pdo php85-pdo_mysql php85-pdo_pgsql php85-phar php85-pgsql php85-pcntl php85-posix php85-simplexml php85-sodium php85-sysvsem php85-xml php85-xmlreader php85-xmlwriter php85-zip ssmtp wget whois &&\
+  (deluser "$(grep ':33:' /etc/passwd | awk -F ':' '{print $1}')" || true) &&\
+  (delgroup "$(grep '^www-data:' /etc/group | awk -F ':' '{print $1}')" || true) &&\
+  mkdir /var/www &&\
+  addgroup -g 33 www-data &&\
+  adduser -D -u 33 -G www-data -s /sbin/nologin -H -h /var/www www-data &&\
+  chown -R www-data:www-data /var/www &&\
+  ln -sf /usr/bin/php85 /usr/bin/php &&\
+  echo 'include=/etc/php85/php-fpm.d/www.inc' >> /etc/php85/php-fpm.d/www.conf
+  # currently no candidates (https://pkgs.alpinelinux.org/packages?name=php8%3F-pecl-mcrypt&branch=edge&repo=&arch=x86_64&origin=&flagged=&maintainer=)
+  # php85-opcache
+  # php85-pecl-mcrypt
+  #apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing php85-pecl-mcrypt &&\
+
+# add entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+
+# add logging config
+COPY logging.conf /etc/php85/php-fpm.d/logging.conf
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/sbin/php-fpm85","-F","--fpm-config","/etc/php85/php-fpm.conf"]
