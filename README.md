@@ -22,6 +22,7 @@ Example usage:
 
 These no longer receive updates or regular rebuilds but the tag(s) may still be available on Docker Hub:
 
+* `8.1` - php8.1
 * `8.0` - php8.0
 
 ## Environment Variables
