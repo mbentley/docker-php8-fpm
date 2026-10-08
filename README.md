@@ -12,7 +12,7 @@ Example usage:
 ## Tags
 
 * `8.5` - php8.5
-  * **Note**: php8.5 is currently missing `php85-opcache` and `php85-pecl-mcrypt` from the alpine repositories and is based on the `edge` release
+    * **Note**: php8.5 is currently missing `php85-opcache` and `php85-pecl-mcrypt` from the alpine repositories and is based on the `edge` release
 * `latest`, `8.4` - php8.4
 * `8.3` - php8.3
 * `8.2` - php8.2
@@ -64,3 +64,39 @@ Now for my nginx container:
 I need to present /data/shared/run as a volume so that nginx can read the UNIX socket (see my [php.conf](https://github.com/mbentley/docker-nginx/blob/master/php.conf) in [mbentley/nginx](https://github.com/mbentley/docker-php8-fpm) which adds all of the necessary bits for PHP by including a single file). I also add in my /data/www directory which shares my site's code for nginx.
 
 Now you should be able to hit nginx and PHP pages will work. I'm using this method for a small number of sites and it's working great.
+
+## Utilities
+
+Helper scripts live in the `utils` directory and can be run from any directory.
+
+### Supported Versions Check
+
+`utils/check_supported_versions.sh` compares the PHP versions currently supported upstream (from php.net) against the versions this repo expects to build, and exits non-zero if they differ. Requires `curl` and `jq`.
+
+```bash
+./utils/check_supported_versions.sh
+```
+
+### Nextcloud PHP Module Check
+
+`utils/check_nextcloud_modules.sh` builds the images from the local Dockerfiles and verifies that the PHP modules loaded in each one meet the requirements in Nextcloud's [PHP Module Quick Reference Table](https://docs.nextcloud.com/server/latest/admin_manual/installation/php_configuration.html), which is stored in `utils/requirements_table.rst`. Requires `bash` and Docker.
+
+```bash
+./utils/check_nextcloud_modules.sh                  # build and check the supported versions (8.2 - 8.5)
+./utils/check_nextcloud_modules.sh 8.4 8.5          # build and check specific versions
+./utils/check_nextcloud_modules.sh --pull 8.5       # check the published image from Docker Hub instead of building
+```
+
+Each version gets a table showing every module from the requirements table as `ok` or `MISSING`. The script exits non-zero if any version is missing a module that Nextcloud lists as required; missing recommended or app-specific modules are reported but do not fail the check. Images are built with a `-modtest` tag suffix (i.e. - `mbentley/php8-fpm:8.5-modtest`) so they do not overwrite the real tags.
+
+#### Updating the Requirements Table
+
+`utils/requirements_table.rst` is the "PHP Module Quick Reference Table" section copied from Nextcloud's [`php_configuration.rst`](https://raw.githubusercontent.com/nextcloud/documentation/refs/heads/master/admin_manual/installation/php_configuration.rst). To refresh it:
+
+```bash
+./utils/update_requirements_table.sh
+```
+
+`utils/update_requirements_table.sh` downloads the source file, extracts the section, and shows a diff if anything changed. It checks that the table header still has the expected columns (`Module`, `Required`, `Recommended`, `For Specific App`, `Description`) and exits with an error without touching `utils/requirements_table.rst` if the format has changed.
+
+If the automatic update fails, update the file manually: open the source link above, copy everything from the `PHP Module Quick Reference Table` heading through the footnote below the table, and paste it into `utils/requirements_table.rst`. The check script reads the module name and the `Required`/`Recommended`/`For Specific App` columns by position, so if Nextcloud changes the columns, `check_nextcloud_modules.sh` will need updating too.
