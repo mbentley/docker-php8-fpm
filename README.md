@@ -15,7 +15,6 @@ Example usage:
 * `8.4` - php8.4
 * `8.3` - php8.3
 * `8.2` - php8.2
-* `8.1` - php8.1
 
 ### Archived Tags
 
